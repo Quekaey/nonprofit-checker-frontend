@@ -1,11 +1,7 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { importProvidersFrom }  from '@angular/core';
-import { App } from './app/app';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 
-bootstrapApplication(App, {
-  providers: [
-    importProvidersFrom(AppModule)
-  ]
-})
-.catch(err => console.error(err));
+platformBrowserDynamic()
+  .bootstrapModule(AppModule)
+  .catch((err) => console.error(err));
+// This file is the entry point for the Angular application.

@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { NonprofitService, CheckResponse } from '../../services/nonprofit.service';
+import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import {
+  NonprofitService,
+  CheckResponse,
+} from '../../services/nonprofit.service';
 
 @Component({
   selector: 'app-checker',
   templateUrl: './checker.component.html',
-  styleUrls: ['./checker.scss']
+  styleUrls: ['./checker.scss'],
 })
 export class CheckerComponent implements OnInit {
   form!: FormGroup;
@@ -14,16 +17,13 @@ export class CheckerComponent implements OnInit {
   data: any = null;
   history: any[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private svc: NonprofitService
-  ) {}
+  constructor(private fb: FormBuilder, private svc: NonprofitService) {}
 
   ngOnInit() {
-    this.form = this.fb.group({
-      ein: [''],
-      name: ['']
-    }, { validators: this.atLeastOne });
+    this.form = this.fb.group(
+      { ein: [''], name: [''] },
+      { validators: this.atLeastOne }
+    );
   }
 
   atLeastOne(control: AbstractControl) {
@@ -38,9 +38,7 @@ export class CheckerComponent implements OnInit {
     this.data = null;
 
     const { ein, name } = this.form.value;
-    const call$ = ein
-      ? this.svc.checkByEin(ein)
-      : this.svc.checkByName(name);
+    const call$ = ein ? this.svc.checkByEin(ein) : this.svc.checkByName(name);
 
     call$.subscribe({
       next: (res: CheckResponse) => {
@@ -51,7 +49,7 @@ export class CheckerComponent implements OnInit {
       error: (err) => {
         this.error = err.error?.error || err.message;
         this.loading = false;
-      }
+      },
     });
   }
 }

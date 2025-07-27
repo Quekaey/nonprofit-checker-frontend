@@ -6,5 +6,5 @@ import { Component, signal } from '@angular/core';
   styleUrls: ['./app.scss'],
 })
 export class App {
-  protected readonly title = signal('frontend');
+  readonly title = signal('frontend');
 }

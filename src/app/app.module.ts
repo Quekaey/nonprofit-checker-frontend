@@ -4,21 +4,19 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { App } from './app';              // your root component
+import { App } from './app';
 import { CheckerComponent } from './components/checker/checker.component';
 import { routes } from './app.routes';
 
 @NgModule({
-  declarations: [
-    App,
-    CheckerComponent
-  ],
+  declarations: [App, CheckerComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
   ],
-  bootstrap: [App]
+  bootstrap: [App],
 })
 export class AppModule {}
+// This is the main module of the Angular application.
