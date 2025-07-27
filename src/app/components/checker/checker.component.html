@@ -1,33 +1,56 @@
 <div class="checker-container">
   <form [formGroup]="form" (ngSubmit)="submit()">
+    <!-- EIN only -->
     <div class="form-group">
-      <label for="ein">EIN</label>
-      <input id="ein" formControlName="ein" placeholder="123456789" />
+      <label for="ein">EIN <span aria-hidden="true">*</span></label>
+      <input
+        id="ein"
+        type="text"
+        formControlName="ein"
+        placeholder="123456789"
+        required
+        aria-required="true"
+      />
     </div>
 
-    <div class="form-group">
-      <label for="name">Organization Name</label>
-      <input id="name" formControlName="name" placeholder="Acme Nonprofit" />
+    <!-- Validation error -->
+    <div
+      *ngIf="form.get('ein')?.hasError('required') && form.get('ein')?.touched"
+      class="error"
+      aria-live="polite"
+    >
+      EIN is required.
     </div>
 
-    <div *ngIf="form.errors?.required" class="error">
-      Please provide an EIN or organization name.
-    </div>
-
-    <button type="submit" [disabled]="loading">Check Compliance</button>
+    <button type="submit" [disabled]="form.invalid || loading">
+      Check Compliance
+    </button>
   </form>
 
-  <div *ngIf="loading" class="loading">Loading…</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <!-- Status messages -->
+  <div *ngIf="loading" class="loading" aria-live="polite">Loading…</div>
+  <div *ngIf="error" class="error" aria-live="polite">
+    {{ error }}
+  </div>
 
+  <!-- Results -->
   <div *ngIf="data" class="results">
     <h2>Compliance Result</h2>
-    <pre>{{ data | json }}</pre>
+    <ul>
+      <li><strong>Name:</strong> {{ data.name }}</li>
+      <li>
+        <strong>Compliance Status:</strong>
+        {{ data.status }}
+      </li>
+      <li><strong>BMF:</strong> {{ data.flags.bmf ? "Yes" : "No" }}</li>
+      <li><strong>PUB78:</strong> {{ data.flags.pub78 ? "Yes" : "No" }}</li>
+    </ul>
 
+    <!-- Recent Searches -->
     <h3>Recent Searches</h3>
     <ul>
       <li *ngFor="let h of history">
-        {{ h.timestamp }} — {{ h.query | json }}
+        {{ h.timestamp | date : "short" }} — {{ h.query.ein }}
       </li>
     </ul>
   </div>

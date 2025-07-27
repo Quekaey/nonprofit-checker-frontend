@@ -9,9 +9,10 @@ import { CheckerComponent } from './components/checker/checker.component';
 import { routes } from './app.routes';
 
 @NgModule({
-  declarations: [App, CheckerComponent],
   imports: [
     BrowserModule,
+    App,
+    CheckerComponent,
     HttpClientModule,
     ReactiveFormsModule,
     RouterModule.forRoot(routes),

@@ -1,14 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+
 import {
   NonprofitService,
   CheckResponse,
 } from '../../services/nonprofit.service';
+import {
+  FormBuilder,
+  FormGroup,
+  AbstractControl,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-checker',
   templateUrl: './checker.component.html',
   styleUrls: ['./checker.scss'],
+  imports: [CommonModule, ReactiveFormsModule], //provides *ngif, *ngFor, etc.
 })
 export class CheckerComponent implements OnInit {
   form!: FormGroup;
@@ -20,15 +29,12 @@ export class CheckerComponent implements OnInit {
   constructor(private fb: FormBuilder, private svc: NonprofitService) {}
 
   ngOnInit() {
-    this.form = this.fb.group(
-      { ein: [''], name: [''] },
-      { validators: this.atLeastOne }
-    );
+    this.form = this.fb.group({ ein: [''] }, { validators: this.atLeastOne });
   }
 
   atLeastOne(control: AbstractControl) {
-    const { ein, name } = control.value;
-    return ein || name ? null : { required: true };
+    const { ein } = control.value;
+    return ein ? null : { required: true };
   }
 
   submit() {
@@ -37,8 +43,8 @@ export class CheckerComponent implements OnInit {
     this.error = '';
     this.data = null;
 
-    const { ein, name } = this.form.value;
-    const call$ = ein ? this.svc.checkByEin(ein) : this.svc.checkByName(name);
+    const { ein } = this.form.value;
+    const call$ = this.svc.checkByEin(ein);
 
     call$.subscribe({
       next: (res: CheckResponse) => {
