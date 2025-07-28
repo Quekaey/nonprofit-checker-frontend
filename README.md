@@ -1,59 +1,162 @@
-# Frontend
+# Nonprofit Compliance Checker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.3.
+A full-stack Angular + Node.js microapp that lets users check a nonprofit organization’s compliance status via the Nonprofit Check Plus API.
 
-## Development server
+---
 
-To start a local development server, run:
+## 📋 Prerequisites
 
-```bash
-ng serve
+Ensure you have the following installed on your machine:
+
+- **Node.js** (v16 or later) & **npm**
+- **Angular CLI**
+
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+- **Docker** & **Docker Compose** (optional, for containerized setup)
+
+---
+
+## 🔧 Environment Variables
+
+Create a `.env` file in both the **frontend/** and **backend/** directories and populate as shown below.
+
+### Frontend (`frontend/.env`)
+
+```ini
+# Base URL for API calls (proxied to backend)
+VITE_API_BASE_URL=http://localhost:4200/api
+
+# Static token to simulate authentication
+VITE_AUTH_TOKEN=your_hardcoded_token_here
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Backend (`backend/.env`)
 
-## Code scaffolding
+```ini
+# Port where Express listens
+env PORT=3000
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+# Nonprofit Check Plus API endpoint & key
+API_BASE_URL=https://pactman.org/nonprofitcheckplus-api\ nAPI_KEY=your_api_key_here
 
-```bash
-ng generate component component-name
+# Token your frontend will send for simple auth
+AUTH_TOKEN=your_hardcoded_token_here
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+> **Note:** Use a library like `dotenv` in your backend to load these variables before your app starts.
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## 🔒 Authentication Setup
 
-To build the project run:
+This microapp uses a **static bearer token** to simulate real-world auth. The backend will reject any requests that do not include a matching token in the `Authorization` header.
 
-```bash
-ng build
-```
+1. **Set** `VITE_AUTH_TOKEN` and `AUTH_TOKEN` to the same value in their respective `.env` files.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+2. **Frontend**: Angular should attach the token via an HTTP interceptor.
 
-## Running unit tests
+   ```ts
+   // example auth.interceptor.ts
+   import { Injectable } from "@angular/core";
+   import {
+     HttpInterceptor,
+     HttpRequest,
+     HttpHandler,
+   } from "@angular/common/http";
+   import { environment } from "../environments/environment";
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+   @Injectable()
+   export class AuthInterceptor implements HttpInterceptor {
+     intercept(req: HttpRequest<any>, next: HttpHandler) {
+       const token = import.meta.env.VITE_AUTH_TOKEN;
+       const authReq = req.clone({
+         setHeaders: { Authorization: `Bearer ${token}` },
+       });
+       return next.handle(authReq);
+     }
+   }
+   ```
 
-```bash
-ng test
-```
+3. **Backend**: Validate the incoming header before proxying to the external API.
 
-## Running end-to-end tests
+   ```js
+   // example middleware in Express (backend/src/auth.js)
+   module.exports = (req, res, next) => {
+     const authHeader = req.headers.authorization;
+     if (!authHeader || authHeader.split(" ")[1] !== process.env.AUTH_TOKEN) {
+       return res.status(401).json({ error: "Unauthorized" });
+     }
+     next();
+   };
+   ```
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## 🚀 Local Development
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Follow these steps to get the app up and running on your machine:
 
-## Additional Resources
+1. **Clone the repository**
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+   ```bash
+   git clone <your-repo-url> nonprofit-compliance-checker
+   cd nonprofit-compliance-checker
+   ```
+
+2. **Configure Environment Variables**
+
+   - Create `frontend/.env` and `backend/.env` as shown above.
+
+3. **Backend Setup**
+
+   ```bash
+   cd backend
+   npm install           # Install dependencies
+   npm start             # Start Express server (port 3000)
+   ```
+
+   - Test with:
+
+     ```bash
+     curl http://localhost:4200/api/test --header "Authorization: Bearer your_hardcoded_token_here"
+     # Expect: { "message": "Backend is working!" }
+     ```
+
+4. **Frontend Setup**
+
+   ```bash
+   cd ../frontend
+   npm install           # Install dependencies
+   ng serve --proxy-config proxy.conf.json
+   ```
+
+   - Opens on [http://localhost:4200](http://localhost:4200)
+   - The Angular HTTP client will automatically proxy `/api/*` to the backend.
+
+5. **Verify the App**
+
+   - In your browser, visit [http://localhost:4200](http://localhost:4200) and use the form to search an EIN or organization name.
+   - Check the network tab to ensure the `Authorization` header and results are returned correctly.
+
+---
+
+## 📸 Screenshots
+
+Include screenshots in `frontend/src/assets/screenshots/` and reference them below:
+
+- **Home Page** (`screenshot-1.png`): Input form for EIN or org name.
+- **Results View** (`screenshot-2.png`): Compliance status and flag details.
+- **History View** (`screenshot-3.png`): Recent searches log.
+
+![Home Page](src/assets/screenshots/screenshot-1.png)
+
+![Results View](src/assets/screenshots/screenshot-2.png)
+
+![History View](src/assets/screenshots/screenshot-3.png)
+
+---
+
+Happy coding! 🚀
