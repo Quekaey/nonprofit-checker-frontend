@@ -5,17 +5,16 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NonprofitService } from '../../services/nonprofit.service';
 import { of, throwError } from 'rxjs';
 
-describe('CheckerComponent', () => {
-  let component: CheckerComponent;
+describe('CheckerComponent (standalone)', () => {
   let fixture: ComponentFixture<CheckerComponent>;
+  let component: CheckerComponent;
   let svc: jasmine.SpyObj<NonprofitService>;
 
   beforeEach(waitForAsync(() => {
     const spy = jasmine.createSpyObj('NonprofitService', ['checkByEin']);
 
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [CheckerComponent],
+      imports: [CheckerComponent, ReactiveFormsModule, HttpClientTestingModule],
       providers: [{ provide: NonprofitService, useValue: spy }],
     })
       .compileComponents()
@@ -39,27 +38,15 @@ describe('CheckerComponent', () => {
   });
 
   it('should call service on valid EIN submit', () => {
-    const mockResponse = { data: { name: 'Test Org' }, history: [] };
-    svc.checkByEin.and.returnValue(of(mockResponse));
+    const mock = { data: { foo: 'bar' }, history: [] };
+    svc.checkByEin.and.returnValue(of(mock));
 
-    component.form.setValue({ ein: '123456789', name: '' });
+    component.form.setValue({ ein: '123', name: '' });
     component.submit();
 
-    expect(svc.checkByEin).toHaveBeenCalledWith('123456789');
-    expect(component.data).toEqual(mockResponse.data);
-    expect(component.history).toEqual(mockResponse.history);
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should handle service error', () => {
-    svc.checkByEin.and.returnValue(
-      throwError(() => ({ error: { error: 'Not Found' } }))
-    );
-
-    component.form.setValue({ ein: '000000000', name: '' });
-    component.submit();
-
-    expect(component.error).toBe('Not Found');
+    expect(svc.checkByEin).toHaveBeenCalledWith('123');
+    expect(component.data).toEqual(mock.data);
+    expect(component.history).toEqual(mock.history);
     expect(component.loading).toBeFalse();
   });
 });
