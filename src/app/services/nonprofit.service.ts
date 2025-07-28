@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface CheckResponse {
   data: any;
@@ -9,17 +10,30 @@ export interface CheckResponse {
 
 @Injectable({ providedIn: 'root' })
 export class NonprofitService {
-  private baseUrl = '';
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  checkByEin(ein: string): Observable<CheckResponse> {
-    const params = new HttpParams().set('ein', ein);
-    return this.http.get<CheckResponse>(`${this.baseUrl}/check`, { params });
+  private authHeaders() {
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${environment.authToken}`,
+      }),
+    };
   }
 
+  checkByEin(ein: string): Observable<CheckResponse> {
+    const params = new HttpParams().set('ein', ein);
+    return this.http.get<CheckResponse>(`${this.baseUrl}/check`, {
+      params,
+      ...this.authHeaders(),
+    });
+  }
   checkByName(name: string): Observable<CheckResponse> {
     const params = new HttpParams().set('name', name);
-    return this.http.get<CheckResponse>(`${this.baseUrl}/check`, { params });
+    return this.http.get<CheckResponse>(`${this.baseUrl}/check`, {
+      params,
+      ...this.authHeaders(),
+    });
   }
 }
