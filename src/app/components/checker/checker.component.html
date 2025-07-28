@@ -1,57 +1,51 @@
-<div class="checker-container">
+<mat-card class="checker-card">
   <form [formGroup]="form" (ngSubmit)="submit()">
-    <!-- EIN only -->
-    <div class="form-group">
-      <label for="ein">EIN <span aria-hidden="true">*</span></label>
-      <input
-        id="ein"
-        type="text"
-        formControlName="ein"
-        placeholder="123456789"
-        required
-        aria-required="true"
-      />
-    </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>EIN</mat-label>
+      <input matInput formControlName="ein" placeholder="Enter EIN" />
+      <mat-error *ngIf="form.get('ein')?.hasError('required')">
+        EIN is required
+      </mat-error>
+    </mat-form-field>
 
-    <!-- Validation error -->
-    <div
-      *ngIf="form.get('ein')?.hasError('required') && form.get('ein')?.touched"
-      class="error"
-      aria-live="polite"
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="loading"
     >
-      EIN is required.
-    </div>
-
-    <button type="submit" [disabled]="form.invalid || loading">
       Check Compliance
     </button>
   </form>
 
-  <!-- Status messages -->
-  <div *ngIf="loading" class="loading" aria-live="polite">Loading…</div>
-  <div *ngIf="error" class="error" aria-live="polite">
-    {{ error }}
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-spinner
+      diameter="48"
+      mode="indeterminate"
+    ></mat-progress-spinner>
   </div>
 
-  <!-- Results -->
-  <div *ngIf="data" class="results">
-    <h2>Compliance Result</h2>
-    <ul>
-      <li><strong>Name:</strong> {{ data.name }}</li>
-      <li>
-        <strong>Compliance Status:</strong>
-        {{ data.status }}
-      </li>
-      <li><strong>BMF:</strong> {{ data.flags.bmf ? "Yes" : "No" }}</li>
-      <li><strong>PUB78:</strong> {{ data.flags.pub78 ? "Yes" : "No" }}</li>
-    </ul>
+  <mat-card *ngIf="error" class="error-card">
+    <mat-card-content>
+      {{ error }}
+    </mat-card-content>
+  </mat-card>
 
-    <!-- Recent Searches -->
-    <h3>Recent Searches</h3>
-    <ul>
-      <li *ngFor="let h of history">
-        {{ h.timestamp | date : "short" }} — {{ h.query.ein }}
-      </li>
-    </ul>
-  </div>
-</div>
+  <mat-card *ngIf="data" class="result-card">
+    <mat-card-title>Result</mat-card-title>
+    <mat-card-content>
+      <p><strong>Name:</strong> {{ data.name }}</p>
+      <p><strong>Status:</strong> {{ data.complianceStatus }}</p>
+      <p><strong>BMF/PUB78:</strong> {{ data.bmfPub78 }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="history?.length" class="history-card">
+    <mat-card-title>Recent Searches</mat-card-title>
+    <mat-list>
+      <mat-list-item *ngFor="let h of history">
+        {{ h.timestamp | date : "short" }} — EIN: {{ h.query.ein }}
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
+</mat-card>

@@ -1,6 +1,10 @@
+import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideHttpClient } from '@angular/common/http';
 import { App } from './app/app';
 
-bootstrapApplication(App).catch((err) => console.error(err));
-
-// This file is the entry point for the Angular application.
+bootstrapApplication(App, {
+  providers: [
+    provideHttpClient(), // <<< registers HttpClient providers
+  ],
+}).catch((err) => console.error(err));

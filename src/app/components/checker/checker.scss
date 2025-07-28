@@ -1,0 +1,25 @@
+.checker-card {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.error-card {
+  margin-top: 1rem;
+  background: #ffebee;
+}
+
+.result-card,
+.history-card {
+  margin-top: 1rem;
+}
