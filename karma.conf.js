@@ -1,4 +1,3 @@
-// frontend/karma.conf.js
 module.exports = function (config) {
   config.set({
     basePath: "",
@@ -20,6 +19,11 @@ module.exports = function (config) {
       dir: require("path").join(__dirname, "./coverage/frontend"),
       subdir: ".",
       reporters: [{ type: "html" }, { type: "text-summary" }],
+    },
+
+    files: [{ pattern: "src/test.ts", watched: false }],
+    preprocessors: {
+      "src/test.ts": ["webpack", "sourcemap"],
     },
 
     reporters: ["progress", "kjhtml"],
