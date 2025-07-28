@@ -1,25 +1,51 @@
+// src/app/components/checker/checker.scss
+
 .checker-card {
   max-width: 600px;
   margin: 2rem auto;
-  padding: 1rem;
-}
+  padding: 2rem;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-.full-width {
-  width: 100%;
+  @media (max-width: 600px) {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+  button[type="submit"] {
+    margin-top: 1.5rem;
+    width: 100%;
+  }
 }
 
 .loading-container {
   display: flex;
   justify-content: center;
-  margin: 1rem 0;
+  margin: 2rem 0;
 }
 
-.error-card {
-  margin-top: 1rem;
-  background: #ffebee;
-}
-
+.error-card,
 .result-card,
 .history-card {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  border-radius: 8px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// Instead of a Sass function, hardcode the warn color (or use your CSS var)
+.error-text {
+  margin: 0.5rem 0 1rem;
+  color: #f44336; /* Material Red 500 */
 }

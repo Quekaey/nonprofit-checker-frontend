@@ -1,5 +1,4 @@
 import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,20 +13,16 @@ import { CheckerComponent } from './components/checker/checker.component';
   standalone: true,
   selector: 'app-root',
   imports: [
-    CommonModule,
     HttpClientModule,
-    // Material bits:
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatCardModule,
     MatProgressSpinnerModule,
     MatListModule,
-    // your business UI
     CheckerComponent,
   ],
   templateUrl: './app.html',
-  styleUrls: ['./app.scss'],
 })
 export class App {
   readonly title = signal('frontend');

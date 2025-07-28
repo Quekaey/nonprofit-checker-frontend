@@ -1,23 +1,36 @@
 <mat-card class="checker-card">
   <form [formGroup]="form" (ngSubmit)="submit()">
+    <!-- EIN Field -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>EIN</mat-label>
       <input matInput formControlName="ein" placeholder="Enter EIN" />
-      <mat-error *ngIf="form.get('ein')?.hasError('required')">
-        EIN is required
-      </mat-error>
     </mat-form-field>
+
+    <!-- Name Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Organization Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter name" />
+    </mat-form-field>
+
+    <!-- Validation message if neither -->
+    <div
+      *ngIf="form.invalid && (form.dirty || form.touched)"
+      class="error-text"
+    >
+      <mat-error>Please enter an EIN or organization name.</mat-error>
+    </div>
 
     <button
       mat-raised-button
       color="primary"
       type="submit"
-      [disabled]="loading"
+      [disabled]="form.invalid || loading"
     >
       Check Compliance
     </button>
   </form>
 
+  <!-- Loading -->
   <div *ngIf="loading" class="loading-container">
     <mat-progress-spinner
       diameter="48"
@@ -25,12 +38,17 @@
     ></mat-progress-spinner>
   </div>
 
+  <!-- Error Card with Retry -->
   <mat-card *ngIf="error" class="error-card">
     <mat-card-content>
       {{ error }}
     </mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="warn" (click)="retry()">Retry</button>
+    </mat-card-actions>
   </mat-card>
 
+  <!-- Success Result -->
   <mat-card *ngIf="data" class="result-card">
     <mat-card-title>Result</mat-card-title>
     <mat-card-content>
@@ -40,11 +58,16 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- History -->
   <mat-card *ngIf="history?.length" class="history-card">
     <mat-card-title>Recent Searches</mat-card-title>
     <mat-list>
       <mat-list-item *ngFor="let h of history">
-        {{ h.timestamp | date : "short" }} — EIN: {{ h.query.ein }}
+        {{ h.timestamp | date : "short" }} —
+        <ng-container *ngIf="h.query.ein; else byName">
+          EIN: {{ h.query.ein }}
+        </ng-container>
+        <ng-template #byName> Name: {{ h.query.name }} </ng-template>
       </mat-list-item>
     </mat-list>
   </mat-card>
